@@ -25,7 +25,7 @@ def summarize_video(video_url: str, x_api_key: Optional[str] = Header(None)):
 
     try:
         genai.configure(api_key=gemini_key)
-        model = genai.GenerativeModel('gemini-1.5-flash') # Το γρήγορο μοντέλο
+        model = genai.GenerativeModel('gemini-pro') # Το γρήγορο μοντέλο
         
         # 3. Ερώτηση στο Gemini
         prompt = f"Ανάλυσε αυτό το βίντεο από το TikTok και κάνε μου μια σύντομη περίληψη στα Ελληνικά: {video_url}"
