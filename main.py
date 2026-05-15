@@ -5,44 +5,25 @@ import os
 
 app = FastAPI()
 
-# Το δικό σου κλειδί για το Make.com
-MY_PRIVATE_KEY = "super_secret_tiktok_123"
-
 @app.get("/")
 def home():
-    return {"status": "Gemini API is Online"}
+    return {"status": "Online"}
 
 @app.get("/summarize")
-def summarize_video(video_url: str, x_api_key: Optional[str] = Header(None)):
-    # 1. Έλεγχος ασφαλείας
-    if x_api_key != MY_PRIVATE_KEY:
+async def summarize_video(video_url: str, x_api_key: Optional[str] = Header(None)):
+    my_key = os.getenv("MY_PRIVATE_KEY", "super_secret_tiktok_123")
+    if x_api_key != my_key:
         raise HTTPException(status_code=403, detail="Invalid API Key")
 
-    # 2. Ρύθμιση Gemini
     gemini_key = os.getenv("GEMINI_API_KEY")
     if not gemini_key:
-        return {"error": "Gemini Key missing in Railway Variables"}
+        return {"error": "Missing GEMINI_API_KEY"}
 
-   try:
+    try:
         genai.configure(api_key=gemini_key)
-        # Χρησιμοποιούμε το μοντέλο που είδαμε στη λίστα σου
         model = genai.GenerativeModel('gemini-2.0-flash')
-        
-        prompt = f"Κάνε μια σύντομη περίληψη 3 σημείων στα Ελληνικά για αυτό το TikTok: {video_url}"
+        prompt = f"Κάνε μια σύντομη περίληψη στα Ελληνικά για αυτό το TikTok: {video_url}"
         response = model.generate_content(prompt)
-        
         return {"summary": response.text}
-    except Exception as e:
-        return {"error": str(e)}
-        
-        # 3. Ερώτηση στο Gemini
-        prompt = f"Ανάλυσε αυτό το βίντεο από το TikTok και κάνε μου μια σύντομη περίληψη στα Ελληνικά: {video_url}"
-        response = model.generate_content(prompt)
-        
-        return {
-            "summary": response.text,
-            "url": video_url
-        }
-
     except Exception as e:
         return {"error": str(e)}
