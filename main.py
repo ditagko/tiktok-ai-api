@@ -23,15 +23,22 @@ def summarize_video(video_url: str, x_api_key: Optional[str] = Header(None)):
     if not gemini_key:
         return {"error": "Gemini Key missing in Railway Variables"}
 
-    try:
+   try:
         genai.configure(api_key=gemini_key)
         
-        # ΑΥΤΟ ΘΑ ΜΑΣ ΔΕΙΞΕΙ ΤΗ ΛΙΣΤΑ
-        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        # Χρησιμοποιούμε το μοντέλο gemini-2.0-flash που είδαμε στη λίστα σου
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        
+        prompt = f"Ανάλυσε αυτό το βίντεο από το TikTok και κάνε μου μια σύντομη περίληψη 3 σημείων στα Ελληνικά: {video_url}"
+        response = model.generate_content(prompt)
         
         return {
-            "debug_available_models": available_models
+            "summary": response.text,
+            "url": video_url
         }
+
+    except Exception as e:
+        return {"error": str(e)}
         
         # 3. Ερώτηση στο Gemini
         prompt = f"Ανάλυσε αυτό το βίντεο από το TikTok και κάνε μου μια σύντομη περίληψη στα Ελληνικά: {video_url}"
