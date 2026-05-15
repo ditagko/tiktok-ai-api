@@ -25,18 +25,13 @@ def summarize_video(video_url: str, x_api_key: Optional[str] = Header(None)):
 
    try:
         genai.configure(api_key=gemini_key)
-        
-        # Χρησιμοποιούμε το μοντέλο gemini-2.0-flash που είδαμε στη λίστα σου
+        # Χρησιμοποιούμε το μοντέλο που είδαμε στη λίστα σου
         model = genai.GenerativeModel('gemini-2.0-flash')
         
-        prompt = f"Ανάλυσε αυτό το βίντεο από το TikTok και κάνε μου μια σύντομη περίληψη 3 σημείων στα Ελληνικά: {video_url}"
+        prompt = f"Κάνε μια σύντομη περίληψη 3 σημείων στα Ελληνικά για αυτό το TikTok: {video_url}"
         response = model.generate_content(prompt)
         
-        return {
-            "summary": response.text,
-            "url": video_url
-        }
-
+        return {"summary": response.text}
     except Exception as e:
         return {"error": str(e)}
         
